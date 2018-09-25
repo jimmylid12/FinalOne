@@ -23,14 +23,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         var list = String()
     }
     
-    var options = [Options(name: "Workout",list: "Legs"),
-                   Options(name: "Workout",list: "Arms"),
-                   Options(name: "Workout",list: "Abs"),
-                   Options(name: "Workout",list: "Chest"),
-                   Options(name: "Nutrition",list: "Calories"),
-                   Options(name: "Nutrition",list: "Carbs"),
-                   Options(name: "Nutrition",list: "Protein"),
-                   Options(name: "Nutrition",list: "Fibre")]
+    var options = [Options(name: "Legs",list: "Workout"),
+                   Options(name: "Arms",list: "Workout"),
+                   Options(name: "Abs",list: "Workout"),
+                   Options(name: "Chest",list: "Workout"),
+                   Options(name: "Calories",list: "Nutrition"),
+                   Options(name: "Carbs",list: "Nutrition"),
+                   Options(name: "Protein",list: "Nutrition"),
+                   Options(name: "Fibre",list: "Nutrition")]
                    
     
     var filteredOptions = [Options]()
@@ -53,7 +53,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func updateSearchResults(for searchController: UISearchController) {
         // If we haven't typed anything into the search bar then do not filter the results
-        if searchController.searchBar.text! == "" {
+        if searchController.searchBar.text! == "ALL" {
             filteredOptions = options
         } else {
             // Filter the results
@@ -62,11 +62,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         self.tableView.reloadData()
     }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.filteredOptions.count
+    func isFiltering() -> Bool {
+        let searchBarScopeIsFiltering = searchController.searchBar.selectedScopeButtonIndex != 0
+        return searchController.isActive && (!searchBarIsEmpty() || searchBarScopeIsFiltering)
     }
     
+    func searchBarIsEmpty() -> Bool {
+        return searchController.searchBar.text?.isEmpty ?? true
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if isFiltering() {
+            return filteredOptions.count
+        }
+        return 0
+    }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell     {
         let cell: UITableViewCell = UITableViewCell(style: UITableViewCell.CellStyle.subtitle, reuseIdentifier: "cell")
         
